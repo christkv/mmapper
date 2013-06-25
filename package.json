@@ -1,0 +1,15 @@
+{
+  "name": "mmapper",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mongodb": "latest"
+  },  
+  "repository": "",
+  "author": "",
+  "license": "BSD"
+}
