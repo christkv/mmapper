@@ -84,13 +84,11 @@ exports['Should Correctly Save and change item'] = function(test) {
 }
 
 exports['Should Correctly Save embedded class and retrieve it'] = function(test) {
-  console.log("--------------------------------- 0")
   var Address = Schema(function(r) {
     r.embedded.in.collection('users').as.array('addresses');
     // First name is string type definition
     r('street').of(String);
   });
-  console.log("--------------------------------- 1")
 
   // Define a User schema
   var User = Schema(function(r) {
@@ -99,11 +97,9 @@ exports['Should Correctly Save embedded class and retrieve it'] = function(test)
     // One or More addresses
     r('addresses').embedded.array.of(Address);
   });
-  console.log("--------------------------------- 2")
 
   // Connect
   connect('mongodb://localhost:27017/mapper_test', function(err, mapper) {
-    console.log("-------------------------------- 3")
     // Create a new user
     var user = new User({
       addresses: [
@@ -116,20 +112,42 @@ exports['Should Correctly Save embedded class and retrieve it'] = function(test)
     test.equal(2, user.addresses.length);
     // Save the user
     user.save(function(err, user1) {
-      console.log("------------------------------------")
-      console.dir(err)
-      console.dir(user1)
       test.equal(2, user1.addresses.length);
       test.equal('5th ave', user1.addresses.get(0).street);
       test.equal('10th ave', user1.addresses.get(1).street);
 
-      console.log("-------------------------------------- SET")
       // Change an address
       user1.addresses.get(0).street = '20th ave';
+      
       // Save the change
-      user1.save(function() {
-        mapper.close();
-        test.done();
+      user1.save(function(err, user2) {
+        test.equal(2, user2.addresses.length);
+        test.equal('20th ave', user2.addresses.get(0).street);
+        test.equal('10th ave', user2.addresses.get(1).street);
+
+        // Get an address
+        Address.findOne({street: '20th ave'}, function(err, address) {
+          test.equal(null, err);
+          test.equal('20th ave', address.street);
+
+          // Modify the address
+          address.street = '30th ave';
+          // Save the address
+          address.save(function(err, address1) {
+            test.equal(null, err);
+            test.equal('30th ave', address1.street);
+
+            // Retrieve the user
+            User.findOne({'addresses.street': '30th ave'}, function(err, user3) {
+              test.equal(null, err);
+              test.equal(2, user3.addresses.length);
+              test.equal('30th ave', user3.addresses.get(0).street);
+
+              mapper.close();
+              test.done();
+            });
+          });
+        });
       });
     });
   });
