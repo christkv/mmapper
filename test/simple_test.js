@@ -2,7 +2,7 @@ var connect = require('../lib/mapper')
   , MongoClient = require('mongodb').MongoClient
   , Schema = connect.Schema;
 
-exports.setUp = function(callback) {
+exports['setUp'] = function(callback) {
   MongoClient.connect('mongodb://localhost:27017/mapper_test', function(err, db) {
     db.dropCollection('users', function(err) {
       db.close();
@@ -11,7 +11,7 @@ exports.setUp = function(callback) {
   });
 }
 
-exports.tearDown = function(callback) {
+exports['tearDown'] = function(callback) {
   callback();
 }
 
@@ -52,6 +52,7 @@ exports['Should Correctly Save and change item'] = function(test) {
     test.equal('hansen', user.last_name);
     test.equal('abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd', user.password);
 
+    // console.log("--------------------------------- 0")
     // Save the data
     user.save(function(err, user1) {
       test.equal(null, err);
