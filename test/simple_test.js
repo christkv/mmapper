@@ -16,15 +16,17 @@ exports['tearDown'] = function(callback) {
 }
 
 // Create reusable custom type for a string
-var StringType = Schema.DefineType
-  .of(String)
-  .minimum.length(0)
-  .maximum.length(255);
+var StringType = Schema.DefineType(function(r) {
+  r.of(String);
+  r.minimum.length(0);
+  r.maximum.length(255);
+});
 
 // Create reusable custom type for a password
-var PasswordType = Schema.DefineType
-  .of(String)
-  .minimum.length(64); 
+var PasswordType = Schema.DefineType(function(r) {
+  r.of(String)
+  r.minimum.length(64); 
+});
 
 exports['Should Correctly Save and change item'] = function(test) {
   // Define a User schema
@@ -119,7 +121,6 @@ exports['Should Correctly Save embedded class and retrieve it'] = function(test)
 
       // Change an address
       user1.addresses.get(0).street = '20th ave';
-      
       // Save the change
       user1.save(function(err, user2) {
         test.equal(2, user2.addresses.length);
